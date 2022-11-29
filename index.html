@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Image Recognition</title>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
+    
+    <!--CSS code-->
+	<style>
+
+	/* The Modal (background) */
+	.modal {
+  	  display: none; /* Hidden by default */
+  	  position: fixed; /* Stay in place */
+  	  z-index: 1; /* Sit on top */
+  	  padding-top: 100px; /* Location of the box */
+  	  left: 0;
+  	  top: 0;
+  	  width: 100%; /* Full width */
+  	  height: 100%; /* Full height */
+  	  overflow: auto; /* Enable scroll if needed */
+  	  background-color: rgb(0,0,0); /* Fallback color */
+  	  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
+
+	/* Modal Content */
+	.modal-content {
+	  background-color: #fefefe;
+	  margin: auto;
+	  padding: 20px;
+	  border: 1px solid #888;
+	  width: 80%;
+	}
+
+	/* The Close Button */
+	.close {
+	  color: #aaaaaa;
+	  float: right;
+	  font-size: 28px;
+	  font-weight: bold;
+	}
+
+	.close:hover,
+	.close:focus {
+	  color: #000;
+	  text-decoration: none;
+	  cursor: pointer;
+	}
+
+
+	body {
+	  margin:0px;
+	  height:100vh;
+	  background: #2cb28b5c;
+	}
+
+	.center {
+	  height:100%;
+	  display:flex;
+	  align-items:center;
+	  justify-content:center;
+
+	}
+	.form-input {
+	  width:350px;
+	  padding:120px;
+	  background:#fefefe63;;
+	  box-shadow: -3px -3px 7px rgba(94, 104, 121, 0.377),
+              3px 3px 7px rgba(94, 104, 121, 0.377);
+	}
+	.form-input img {
+	  width:100%;
+	  display:none;
+	  margin-bottom:30px;
+	}
+	.form-input input {
+	  display:none;
+	}
+
+	.form-input label {
+	  display:block;
+	  width:45%;
+	  height:45px;
+	  margin-left: 25%;
+	  line-height:50px;
+	  text-align:center;
+	  background:#1172c2;
+	  color:#fff;
+	  font-size:13px;
+	  font-family:"Open Sans",sans-serif;
+	  text-transform:Uppercase;
+	  font-weight:600;
+	  border-radius:5px;
+	  cursor:pointer;
+	}
+	.form-input button {
+	  display:block;
+	  width:45%;
+	  height:45px;
+	  margin-left: 25%;
+	  line-height:50px;
+	  text-align:center;
+	  background:#1172c2;
+	  color:#fff;
+	  font-size:13px;
+	  font-family:"Open Sans",sans-serif;
+	  text-transform:Uppercase;
+	  font-weight:600;
+	  border-radius:5px;
+	  cursor:pointer;
+	  margin-bottom:5px;
+	  margin-top:5px;
+	  border:1px solid white;
+	}
+	
+	@-webkit-keyframes spin {
+	  0% { -webkit-transform: rotate(0deg); }
+	  100% { -webkit-transform: rotate(360deg); }
+	}
+
+	@keyframes spin {
+	  0% { transform: rotate(0deg); }	
+	  100% { transform: rotate(360deg); }
+	}
+	td {
+	border:1px solid black;
+}
+table.center{
+margin-left: auto; 
+  margin-right: auto;
+}
+	</style>
+ 
+</head>
+
+<body>
+<div class="center">
+  <div class="form-input">
+       <h2><center>Image Recognition</center></h2>
+       <div class="preview">
+            <img id="fileToUpload-preview">
+       </div>
+       <label for="fileToUpload">Select Image</label>
+       <input type="file" id="fileToUpload" accept="image/*" onchange="showPreview(event);">
+       <button id="myBtn" >upload</button>
+
+
+       <!-- Trigger/Open The Modal -->
+       <!--button id="myBtn" >Final Results</button-->
+        <!--div class="loader"></div-->
+
+       <!-- The Modal -->
+       <div id="myModal" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+                 <span class="close">&times;</span>
+                 <p id="results">
+				 <table class="center" id="myTable">
+
+				 </table>
+                 </p>
+            </div>
+
+       </div>
+       <script src="https://cdn.jsdelivr.net/gh/AmagiTech/JSLoader/amagiloader.js"></script>
+       <script>
+	   
+           // Get the modal
+           var modal = document.getElementById("myModal");
+
+       	// Get the button that opens the modal
+       	var btn = document.getElementById("myBtn");
+
+       	// Get the <span> element that closes the modal
+       	var span = document.getElementsByClassName("close")[0];
+
+       	// When the user clicks the button, open the modal 
+       	btn.onclick = function() {
+		  uploadMedia();
+		   AmagiLoader.show();
+		   setTimeout(() => {
+		   AmagiLoader.hide();
+         	   modal.style.display = "block";
+              var url = 'https://terraform-suresh-s3-bucket-logs.s3.us-east-2.amazonaws.com/logs.txt';
+  		   var storedText;
+
+		   fetch(url)
+		     .then(function(response) {
+		       response.text().then(function(text) {
+		         storedText = text;
+		         done();
+		       });
+		     });
+
+		   function done() {
+		   const myArray = storedText.split("%");
+			var table = document.getElementById("myTable");
+		     console.log(""+myArray);
+			 for (i=0;i<myArray.length;i++)
+			{
+			  var row = table.insertRow(i);
+			  var cell = row.insertCell(0);
+			cell.innerHTML = myArray[i];
+
+			}
+			 
+		     //document.getElementById("results").innerHTML = myArray;
+
+		   }
+	        }, 3000);
+             
+       	}
+
+       	// When the user clicks on <span> (x), close the modal
+       	span.onclick = function() {
+         	   modal.style.display = "none";
+       	}
+
+       	// When the user clicks anywhere outside of the modal, close it
+       	window.onclick = function(event) {
+             if (event.target == modal) {
+               modal.style.display = "none";
+             }
+       	}
+		
+       </script>
+
+  </div>
+</div> 
+
+<script type="text/javascript">
+function showPreview(event){
+  if(event.target.files.length > 0){
+    var src = URL.createObjectURL(event.target.files[0]);
+    var preview = document.getElementById("fileToUpload-preview");
+    preview.src = src;
+    preview.style.display = "block";
+  }
+}
+</script>
+
+ 
+
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.726.0.min.js"></script>
+    <script src='main.js'></script>
+    <script src='Preview.js'></script>
+</body>
+
+</html>
